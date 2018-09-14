@@ -1,6 +1,33 @@
 import pandas as pd
 import numpy as np
 
+#Forma el query para el dataframe
+def formQuery(arrAll, arrChoose):
+    query=""
+    arrBit = []
+    for idx,val in enumerate(arrAll):
+        if(arrAll[idx] in arrChoose):
+            arrBit.append(1)
+        else:
+            arrBit.append(0)
+    for idx,val in enumerate(arrAll):
+        if(idx == (len(arrAll) -1)):
+            query+= str(arrAll[idx]) + '==' + str(arrBit[idx])
+        else:
+            query+= str(arrAll[idx]) + '==' + str(arrBit[idx])+ ' & '
+    return query
+  
+    
+#Forma el listado de probabilidades entre solo una variable 
+def formSingleProbability(arrState, arrProbability):
+    probability_string=""
+    dicc = {}
+    for idx,val in enumerate(arrState):
+        dicc[val] = [arrProbability[idx]]
+    return dicc
+
+    
+
 #Generar un arreglo con los tamanhos de las diferentes bases
 def generateArrayBase(campos, arrMedicamentos):
     arrBase = []
@@ -91,3 +118,19 @@ def getListaEvidencia(df):
         lista.append(fila.values.tolist())
     return lista
 
+def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence, 
+                               arrStateVarible, arrProbabilistic):
+    
+    df_ANT = createCombinationDataframe(arrStateEvidence, arrVariableEvidence) 
+    df     = initProbabilisticDataframe(arrStateEvidence, arrStateVarible, arrProbabilistic)
+    
+    #single evidence
+    for i,val in enumerate(arrVariableEvidence):
+        query_string = formQuery(arrVariableEvidence, arrVariableEvidence[i])
+        ef_evidence  = df_ANT.query(query_string)
+        arr_index    = getIndexToSet(ef_evidence.index)
+        dicc = formSingleProbability(arrStateVarible,arrProbabilisticEvidence[i])
+        setProbabilisticValue(df, dicc, arr_index)
+    
+    values=getListaEvidencia(df)
+    return values
