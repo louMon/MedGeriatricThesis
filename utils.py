@@ -1,3 +1,34 @@
+import pandas as pd
+import numpy as np
+
+#Forma el query para el dataframe
+def formQuery(arrAll, arrChoose):
+    query=""
+    arrBit = []
+    for idx,val in enumerate(arrAll):
+        if(arrAll[idx] in arrChoose):
+            arrBit.append(1)
+        else:
+            arrBit.append(0)
+    for idx,val in enumerate(arrAll):
+        if(idx == (len(arrAll) -1)):
+            query+= str(arrAll[idx]) + '==' + str(arrBit[idx])
+        else:
+            query+= str(arrAll[idx]) + '==' + str(arrBit[idx])+ ' & '
+    return query
+  
+    
+#Forma el listado de probabilidades entre solo una variable 
+def formSingleProbability(arrState, arrProbability):
+    probability_string=""
+    dicc = {}
+    for idx,val in enumerate(arrState):
+        dicc[val] = [arrProbability[idx]]
+    return dicc
+
+    
+
+#Generar un arreglo con los tamanhos de las diferentes bases
 def generateArrayBase(campos, arrMedicamentos):
     arrBase = []
     cantEstados = 0     
@@ -9,6 +40,7 @@ def generateArrayBase(campos, arrMedicamentos):
         arrBase.append(cantEstados)
     return arrBase
 
+#Generar una lista de verdad por variable dada, segun sea su base
 def generateArrayState(i,filas, maxEstado, cantVecesPorEstado,arrBase,arrMedicamentos):
     medlist = []
     contEstado = 1
@@ -30,31 +62,75 @@ def generateArrayState(i,filas, maxEstado, cantVecesPorEstado,arrBase,arrMedicam
             contadorInterno +=1
     return medlist
 
-def createHeader(campos):
-    arrH=[]
-    for i in range(campos):
-        arrH.append('med'+str(i))
-    return arrH
-
-def createDataframe(arrMedicamentos,arrHeader):
-    campos = len(arrMedicamentos)
+#Devuelve la cantidad de filas de la tabla de verdad
+def lenLista(arrMedicamentos):    
     filas = 1 
-    dicc = {}
-        
-    #Obteniendo la base por cada posicion del medicamento
-    arrBase   = generateArrayBase(campos, arrMedicamentos)
-    
-    #Obteniendo la cantidad de filas
     for i in arrMedicamentos:
         filas  *=i 
-        
+    return filas
+
+#Genera dataframe de las posibles combinaciones de medicamentos
+def createCombinationDataframe(arrEstadosMedicamentos,arrHeader):
+    campos = len(arrEstadosMedicamentos)
+    dicc = {}
+    i = 0   
+    #Obteniendo el tamanho de la base por cada posicion del medicamento
+    arrBase = generateArrayBase(campos, arrEstadosMedicamentos)   
+    #Obteniendo la cantidad de filas
+    filas   = lenLista(arrEstadosMedicamentos)         
     #Obteniendo la gran tabla de verdad
-    i = 0
     for key in arrHeader:  
-        maxEstado = arrMedicamentos[i] -1 
-        cantVecesPorEstado = arrBase[i]/arrMedicamentos[i]
-        medlist = generateArrayState(i,filas, maxEstado,cantVecesPorEstado,arrBase,arrMedicamentos)
+        maxEstado = arrEstadosMedicamentos[i] -1 
+        cantVecesPorEstado = arrBase[i]/arrEstadosMedicamentos[i]
+        medlist = generateArrayState(i,filas, maxEstado,cantVecesPorEstado,arrBase,arrEstadosMedicamentos)
         dicc[key] = medlist
         i+=1   
     df = pd.DataFrame(dicc)
     return df
+
+#Genera dataframe de las probabilidades de presencia o ausencia del sintoma
+def initProbabilisticDataframe(arrEstadosMedicamentos, listEstados, listProbabilidades):
+    df= pd.DataFrame(columns=listEstados)
+    filas   = lenLista(arrEstadosMedicamentos)
+    for i in range(filas):
+        df2 = pd.DataFrame([listProbabilidades], columns=listEstados)
+        df =df.append(df2)
+    df=df.reset_index(drop=True)    
+    return df
+
+#Devuelve el arreglo de los indices correspondientes a cada combinacion de medicamentos
+def getIndexToSet(arrayIndex):
+    arr = []
+    for i in arrayIndex:
+        arr.append(i)
+    return arr
+
+#Colocar la probabilidad dado la efectividad y evidencia para un medicamento
+def setProbabilisticValue(dfSintoma, diccEstados, indexMedicamentos):
+    new_df = pd.DataFrame(diccEstados, index=indexMedicamentos)
+    dfSintoma.update(new_df)
+    
+#Obtener la lista de valores de la evidencia    
+def getListaEvidencia(df):
+    lista =[]
+    # Iteración por filas del DataFrame:
+    for indice_fila, fila in df.transpose().iterrows():
+        lista.append(fila.values.tolist())
+    return lista
+
+def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence, 
+                               arrStateVarible, arrProbabilistic):
+    
+    df_ANT = createCombinationDataframe(arrStateEvidence, arrVariableEvidence) 
+    df     = initProbabilisticDataframe(arrStateEvidence, arrStateVarible, arrProbabilistic)
+    
+    #single evidence
+    for i,val in enumerate(arrVariableEvidence):
+        query_string = formQuery(arrVariableEvidence, arrVariableEvidence[i])
+        ef_evidence  = df_ANT.query(query_string)
+        arr_index    = getIndexToSet(ef_evidence.index)
+        dicc = formSingleProbability(arrStateVarible,arrProbabilisticEvidence[i])
+        setProbabilisticValue(df, dicc, arr_index)
+    
+    values=getListaEvidencia(df)
+    return values
