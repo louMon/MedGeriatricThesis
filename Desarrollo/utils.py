@@ -1,5 +1,59 @@
 import pandas as pd
 import numpy as np
+import random
+
+
+#Se escoge al padre
+def chooseParent(population,ts):
+    popsize = len(population)    
+    rivalParent = getArrayRivals(popsize,ts)   
+    maxFitness = 0
+    iParent=0
+    for index in rivalParent:
+        if (population[index].fitness > maxFitness):
+            maxFitness = population[index].fitness 
+            iParent = index      
+    return iParent
+    
+
+#Obtiene el arreglo de rivales
+def getArrayRivals(popsize,ts):
+    rival = []
+    for i in range(ts): 
+        rival_index = random.randint(0,popsize-1)
+        if rival_index not in rival: 
+            rival.append(rival_index)
+    return rival
+
+
+#Setea el estado del cromosoma
+def setStatesChromosome(diccMedicines, individuo):
+    chromosome = individuo.chromosome
+    n = len(chromosome)
+    i = 0
+    for key in diccMedicines:
+        diccMedicines[key] = chromosome[i]
+        i+=1
+    return diccMedicines
+        
+
+#Agrega la evidencia en el diccionario de antecedentes
+def createEvidence(dicc1, dicc2):
+    evidence = dicc1.copy()
+    evidence.update(dicc2)
+    return evidence
+
+
+#Cambia el alelo del gen
+def changeState(val, numStates):
+    arrStates = []
+    for i in range(0,numStates):
+        arrStates.append(i)
+    arrStates.remove(val)
+    new_value = random.choice(arrStates)
+    return new_value
+    
+
 
 #Forma el query para el dataframe
 def formQuery(arrAll, arrChoose):
