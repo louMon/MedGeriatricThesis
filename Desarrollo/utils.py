@@ -58,24 +58,23 @@ def changeState(val, numStates):
 ##Utils to bayesian network
 
 
-#Forma el single query para el dataframe (solo las opciones senhaladas como prendidas, las demas apagadas)
+#Forma el query para el dataframe (solo las opciones senhaladas como prendidas, las demas apagadas)
 def formQuery(arrAll, arrChoose):
     query=""
     arrBit = []
-    print(arrAll)
     for idx,val in enumerate(arrAll):
-        print(arrChoose)
         if(arrAll[idx] in arrChoose):
             arrBit.append(1)
         else:
             arrBit.append(0)
-        print(arrBit)
     for idx,val in enumerate(arrAll):
         if(idx == (len(arrAll) -1)):
             query+= str(arrAll[idx]) + '==' + str(arrBit[idx])
         else:
             query+= str(arrAll[idx]) + '==' + str(arrBit[idx])+ ' & '
     return query
+
+    
     
 #Forma el listado de probabilidades entre solo una variable 
 def formSingleProbability(arrState, arrProbability):
@@ -190,7 +189,7 @@ def formDoubleEvidence(arrVariableEvidence):
     return arrDoubleEvidence
         
 
-def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence, 
+def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence,arrDoubleProbabilisticEvidence,
                                arrStateVarible, arrProbabilistic):
     
     df_ANT = createCombinationDataframe(arrStateEvidence, arrVariableEvidence) 
@@ -198,7 +197,7 @@ def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabili
     
     #single evidence (solo una variable prendida)
     for i,val in enumerate(arrVariableEvidence):
-        query_string = formQuery(arrVariableEvidence, val)
+        query_string = formQuery(arrVariableEvidence, arrVariableEvidence[i])
         ef_evidence  = df_ANT.query(query_string)
         arr_index    = getIndexToSet(ef_evidence.index)
         dicc = formSingleProbability(arrStateVarible,arrProbabilisticEvidence[i])
@@ -208,11 +207,10 @@ def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabili
     
     #double evidence (combinacion de dos variables prendidas)
     for i, val in enumerate(arrDoubleVaribleEvidence):
-        query_string = formQuery(arrDoubleVaribleEvidence, val)
-        print(query_string)
+        query_string = formQuery(arrVariableEvidence, val)
         ef_evidence  = df_ANT.query(query_string)
         arr_index    = getIndexToSet(ef_evidence.index)
-        dicc = formSingleProbability(arrStateVarible,arrProbabilisticEvidence[i])
+        dicc = formSingleProbability(arrStateVarible,arrDoubleProbabilisticEvidence[i])
         setProbabilisticValue(df, dicc, arr_index)
     
     values=getListaEvidencia(df)
