@@ -2,6 +2,17 @@ import pandas as pd
 import numpy as np
 import random
 
+#########################################################################################################Utils to genetic algorithm
+
+##Mejora la impresion
+def print_medicamentos(posiciones, medicamentos):
+    arr = []
+    i=0
+    for index in medicamentos:
+        if(posiciones[i]==0):
+            arr.append(index)
+        i+=1
+    return arr
 
 #Se escoge al padre
 def chooseParent(population,ts):
@@ -53,9 +64,11 @@ def changeState(val, numStates):
     new_value = random.choice(arrStates)
     return new_value
     
+#######################################################################################################
+##Utils to bayesian network
 
 
-#Forma el query para el dataframe
+#Forma el query para el dataframe (solo las opciones senhaladas como prendidas, las demas apagadas)
 def formQuery(arrAll, arrChoose):
     query=""
     arrBit = []
@@ -70,7 +83,8 @@ def formQuery(arrAll, arrChoose):
         else:
             query+= str(arrAll[idx]) + '==' + str(arrBit[idx])+ ' & '
     return query
-  
+
+    
     
 #Forma el listado de probabilidades entre solo una variable 
 def formSingleProbability(arrState, arrProbability):
@@ -172,18 +186,41 @@ def getListaEvidencia(df):
         lista.append(fila.values.tolist())
     return lista
 
-def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence, 
+def formDoubleEvidence(arrVariableEvidence):
+    arrDoubleEvidence = []
+    for i,val_i in enumerate(arrVariableEvidence):
+        for j, val_j in enumerate(arrVariableEvidence):
+            if(val_i != val_j):
+                if(j>=i):
+                    aux = []
+                    aux.append(val_i)
+                    aux.append(val_j)
+                    arrDoubleEvidence.append(aux)     
+    return arrDoubleEvidence
+        
+
+def generateProbabilisticList(arrStateEvidence, arrVariableEvidence,arrProbabilisticEvidence,arrDoubleProbabilisticEvidence,
                                arrStateVarible, arrProbabilistic):
     
     df_ANT = createCombinationDataframe(arrStateEvidence, arrVariableEvidence) 
     df     = initProbabilisticDataframe(arrStateEvidence, arrStateVarible, arrProbabilistic)
     
-    #single evidence
+    #single evidence (solo una variable prendida)
     for i,val in enumerate(arrVariableEvidence):
         query_string = formQuery(arrVariableEvidence, arrVariableEvidence[i])
         ef_evidence  = df_ANT.query(query_string)
         arr_index    = getIndexToSet(ef_evidence.index)
         dicc = formSingleProbability(arrStateVarible,arrProbabilisticEvidence[i])
+        setProbabilisticValue(df, dicc, arr_index)
+    
+    arrDoubleVaribleEvidence = formDoubleEvidence(arrVariableEvidence)
+    
+    #double evidence (combinacion de dos variables prendidas)
+    for i, val in enumerate(arrDoubleVaribleEvidence):
+        query_string = formQuery(arrVariableEvidence, val)
+        ef_evidence  = df_ANT.query(query_string)
+        arr_index    = getIndexToSet(ef_evidence.index)
+        dicc = formSingleProbability(arrStateVarible,arrDoubleProbabilisticEvidence[i])
         setProbabilisticValue(df, dicc, arr_index)
     
     values=getListaEvidencia(df)
