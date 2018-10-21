@@ -1,0 +1,104 @@
+network unknown {
+}
+variable AN_BRADICARDIA {
+    type discrete [ 2 ] { AN_BRADICARDIA_0, AN_BRADICARDIA_1 };
+}
+variable AN_DISFUNCION_VENTRI {
+    type discrete [ 2 ] { AN_DISFUNCION_VENTRI_0, AN_DISFUNCION_VENTRI_1 };
+}
+variable AN_EXTRENIMIENTO {
+    type discrete [ 2 ] { AN_EXTRENIMIENTO_0, AN_EXTRENIMIENTO_1 };
+}
+variable AN_HIPONATREMIA {
+    type discrete [ 2 ] { AN_HIPONATREMIA_0, AN_HIPONATREMIA_1 };
+}
+variable AN_HIPOPOTASEMIA {
+    type discrete [ 2 ] { AN_HIPOPOTASEMIA_0, AN_HIPOPOTASEMIA_1 };
+}
+variable AN_MEDIDA_PRESION {
+    type discrete [ 2 ] { AN_MEDIDA_PRESION_0, AN_MEDIDA_PRESION_1 };
+}
+variable MR_AMLODIPINO {
+    type discrete [ 2 ] { MR_AMLODIPINO_0, MR_AMLODIPINO_1 };
+}
+variable MR_BISOPROLOL {
+    type discrete [ 2 ] { MR_BISOPROLOL_0, MR_BISOPROLOL_1 };
+}
+variable MR_CAPTOPRIL {
+    type discrete [ 2 ] { MR_CAPTOPRIL_0, MR_CAPTOPRIL_1 };
+}
+variable MR_CLORTALIDONA {
+    type discrete [ 2 ] { MR_CLORTALIDONA_0, MR_CLORTALIDONA_1 };
+}
+variable MR_ENALAPRIL {
+    type discrete [ 2 ] { MR_ENALAPRIL_0, MR_ENALAPRIL_1 };
+}
+variable MR_IRBESARTAN {
+    type discrete [ 2 ] { MR_IRBESARTAN_0, MR_IRBESARTAN_1 };
+}
+variable MR_LOSARTAN {
+    type discrete [ 2 ] { MR_LOSARTAN_0, MR_LOSARTAN_1 };
+}
+variable MR_VERAPAMILO {
+    type discrete [ 2 ] { MR_VERAPAMILO_0, MR_VERAPAMILO_1 };
+}
+variable SA_ANGINA_PECHO {
+    type discrete [ 2 ] { SA_ANGINA_PECHO_0, SA_ANGINA_PECHO_1 };
+}
+variable SA_HIPERTENSION_ARTERIAL {
+    type discrete [ 2 ] { SA_HIPERTENSION_ARTERIAL_0, SA_HIPERTENSION_ARTERIAL_1 };
+}
+variable SA_INSUFICIENCIA_CARDIACA {
+    type discrete [ 2 ] { SA_INSUFICIENCIA_CARDIACA_0, SA_INSUFICIENCIA_CARDIACA_1 };
+}
+probability ( AN_BRADICARDIA ) {
+    table 0.5, 0.5 ;
+}
+probability ( AN_DISFUNCION_VENTRI ) {
+    table 0.5, 0.5 ;
+}
+probability ( AN_EXTRENIMIENTO ) {
+    table 0.5, 0.5 ;
+}
+probability ( AN_HIPONATREMIA ) {
+    table 0.5, 0.5 ;
+}
+probability ( AN_HIPOPOTASEMIA ) {
+    table 0.5, 0.5 ;
+}
+probability ( AN_MEDIDA_PRESION ) {
+    table 0.5, 0.5 ;
+}
+probability ( MR_AMLODIPINO | AN_EXTRENIMIENTO, AN_MEDIDA_PRESION ) {
+    table 0.2, 0.69, 0.1, 0.01, 0.8, 0.31, 0.9, 0.99 ;
+}
+probability ( MR_BISOPROLOL | AN_BRADICARDIA, AN_MEDIDA_PRESION ) {
+    table 0.15, 0.55, 0.1, 0.01, 0.85, 0.45, 0.9, 0.99 ;
+}
+probability ( MR_CAPTOPRIL | AN_DISFUNCION_VENTRI, AN_MEDIDA_PRESION ) {
+    table 0.65, 0.85, 0.55, 0.01, 0.35, 0.15, 0.45, 0.99 ;
+}
+probability ( MR_CLORTALIDONA | AN_HIPONATREMIA, AN_HIPOPOTASEMIA, AN_MEDIDA_PRESION ) {
+    table 0.01, 0.2, 0.2, 0.45, 0.01, 0.05, 0.05, 0.01, 0.99, 0.8, 0.8, 0.55, 0.99, 0.95, 0.95, 0.99 ;
+}
+probability ( MR_ENALAPRIL | AN_MEDIDA_PRESION ) {
+    table 0.9, 0.01, 0.1, 0.99 ;
+}
+probability ( MR_IRBESARTAN | AN_MEDIDA_PRESION ) {
+    table 0.83, 0.01, 0.17, 0.99 ;
+}
+probability ( MR_LOSARTAN | AN_MEDIDA_PRESION ) {
+    table 0.85, 0.01, 0.15, 0.99 ;
+}
+probability ( MR_VERAPAMILO | AN_EXTRENIMIENTO, AN_MEDIDA_PRESION ) {
+    table 0.2, 0.65, 0.1, 0.01, 0.8, 0.35, 0.9, 0.99 ;
+}
+probability ( SA_ANGINA_PECHO | MR_AMLODIPINO, MR_BISOPROLOL, MR_VERAPAMILO ) {
+    table 0.9, 0.15, 0.75, 0.21, 0.16, 0.29, 0.19, 0.9, 0.1, 0.85, 0.25, 0.79, 0.84, 0.71, 0.81, 0.1 ;
+}
+probability ( SA_HIPERTENSION_ARTERIAL | MR_AMLODIPINO, MR_BISOPROLOL, MR_CAPTOPRIL, MR_CLORTALIDONA, MR_ENALAPRIL, MR_IRBESARTAN, MR_LOSARTAN, MR_VERAPAMILO ) {
+    table 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.21, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.85, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.2, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.19, 0.9, 0.9, 0.9, 0.29, 0.9, 0.16, 0.21, 0.16, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.25, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.22, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.21, 0.9, 0.9, 0.9, 0.18, 0.9, 0.24, 0.2, 0.31, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.15, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.16, 0.9, 0.9, 0.9, 0.27, 0.9, 0.28, 0.26, 0.17, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.11, 0.9, 0.9, 0.9, 0.21, 0.9, 0.78, 0.24, 0.21, 0.9, 0.9, 0.9, 0.85, 0.9, 0.14, 0.19, 0.13, 0.9, 0.19, 0.28, 0.18, 0.3, 0.22, 0.36, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.79, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.8, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.81, 0.1, 0.1, 0.1, 0.71, 0.1, 0.84, 0.79, 0.84, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.75, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.78, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.79, 0.1, 0.1, 0.1, 0.82, 0.1, 0.76, 0.8, 0.69, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.85, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.84, 0.1, 0.1, 0.1, 0.73, 0.1, 0.72, 0.74, 0.83, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.89, 0.1, 0.1, 0.1, 0.79, 0.1, 0.22, 0.76, 0.79, 0.1, 0.1, 0.1, 0.15, 0.1, 0.86, 0.81, 0.87, 0.1, 0.81, 0.72, 0.82, 0.7, 0.78, 0.64, 0.1 ;
+}
+probability ( SA_INSUFICIENCIA_CARDIACA | MR_BISOPROLOL, MR_CLORTALIDONA, MR_ENALAPRIL, MR_IRBESARTAN, MR_LOSARTAN ) {
+    table 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.45, 0.9, 0.9, 0.9, 0.55, 0.9, 0.75, 0.8, 0.24, 0.9, 0.9, 0.9, 0.6, 0.9, 0.75, 0.75, 0.39, 0.9, 0.12, 0.65, 0.35, 0.45, 0.48, 0.55, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.55, 0.1, 0.1, 0.1, 0.45, 0.1, 0.25, 0.2, 0.76, 0.1, 0.1, 0.1, 0.4, 0.1, 0.25, 0.25, 0.61, 0.1, 0.88, 0.35, 0.65, 0.55, 0.52, 0.45, 0.1 ;
+}

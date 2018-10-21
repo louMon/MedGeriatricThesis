@@ -4,6 +4,16 @@ import random
 
 #########################################################################################################Utils to genetic algorithm
 
+##Mejora la impresion
+def print_medicamentos(posiciones, medicamentos):
+    arr = []
+    i=0
+    for index in medicamentos:
+        if(posiciones[i]==0):
+            arr.append(index)
+        i+=1
+    return arr
+
 #Se escoge al padre
 def chooseParent(population,ts):
     popsize = len(population)    
