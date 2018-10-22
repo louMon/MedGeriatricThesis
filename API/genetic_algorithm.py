@@ -13,8 +13,7 @@ class PathologyIndividual:
     """Clase destinada a las patologias, antecedentes del paciente,
     sintomas de la patologia y efectos de los medicamentos """
 
-    def __init__(self, pathology, diccBackground, diccMedicines,arrStates,
-                 arrSymtopm, arrWeigth, bayesianNetwork):
+    def __init__(self, pathology, diccBackground, diccMedicines,arrStates,arrSymtopm, arrWeigth, bayesianNetwork):
         self.pathology = pathology
         self.diccBackground ={}
         self.diccMedicines  ={}    
@@ -23,6 +22,7 @@ class PathologyIndividual:
         self.arrWeigth       = arrWeigth[:]
         self.bayesianNetwork = bayesianNetwork
         
+        print(diccBackground)
         for index in diccBackground:  
             self.diccBackground[index]  = diccBackground[index]
         
